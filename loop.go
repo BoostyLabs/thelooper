@@ -23,8 +23,9 @@ func NewLoop(interval time.Duration) *Loop {
 }
 
 // SetInterval allows to change the interval before starting.
+// The interval is specified in milliseconds. 1 sec = 1000 millisec.
 func (loop *Loop) SetInterval(interval time.Duration) {
-	loop.interval = interval
+	loop.interval = interval * time.Millisecond
 }
 
 // Run runs the specified in an interval.
