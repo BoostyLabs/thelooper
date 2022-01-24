@@ -28,6 +28,11 @@ func (loop *Loop) SetInterval(interval time.Duration) {
 	loop.interval = interval * time.Millisecond
 }
 
+// SetNextTickDuration allows to change the next tick duration after starting.
+func (loop *Loop) SetNextTickDuration(nextTick time.Time) {
+	loop.ticker.Reset(nextTick.Sub(time.Now().UTC()))
+}
+
 // Run runs the specified in an interval.
 // Every interval `fn` is started.
 func (loop *Loop) Run(ctx context.Context, fn func(ctx context.Context) error) error {
