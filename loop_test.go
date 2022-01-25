@@ -18,6 +18,9 @@ func TestLoop_Run_Error_With_Interval(t *testing.T) {
 
 	loop.SetInterval(time.Second)
 	err := loop.Run(context.Background(), func(_ context.Context) error {
+		now := time.Now().UTC()
+		nextDayTime := time.Date(now.Year(), now.Month(), now.Day(), 23, 59, 59, 0, time.UTC)
+		loop.SetNextTickDuration(nextDayTime)
 		return errors.New("")
 	})
 

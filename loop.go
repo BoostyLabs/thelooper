@@ -30,7 +30,7 @@ func (loop *Loop) SetInterval(interval time.Duration) {
 
 // SetNextTickDuration allows to change the next tick duration after starting.
 func (loop *Loop) SetNextTickDuration(nextTick time.Time) {
-	loop.ticker.Reset(nextTick.Sub(time.Now().UTC()))
+	loop.ticker = time.NewTicker(nextTick.Sub(time.Now().UTC()))
 }
 
 // Run runs the specified in an interval.
