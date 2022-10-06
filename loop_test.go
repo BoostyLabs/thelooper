@@ -6,6 +6,8 @@ package thelooper_test
 import (
 	"context"
 	"errors"
+	"github.com/stretchr/testify/assert"
+	"log"
 	"testing"
 	"time"
 
@@ -40,4 +42,29 @@ func TestLoop_Run_NoInterval(t *testing.T) {
 		},
 		"Run without setting an interval should panic",
 	)
+}
+
+func TestLoop_CtxCancel(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	loop := &thelooper.Loop{}
+
+	t.Parallel()
+
+	go func() {
+		cancel()
+	}()
+
+	loop.SetInterval(time.Second)
+	err := loop.Run(ctx, func(_ context.Context) error {
+		now := time.Now().UTC()
+		nextDayTime := time.Date(now.Year(), now.Month(), now.Day(), 23, 59, 59, 0, time.UTC)
+		loop.SetNextTickDuration(nextDayTime)
+
+		return nil
+	})
+
+	log.Println(err)
+
+	require.Error(t, err)
+	assert.True(t, errors.Is(err, thelooper.ErrCtxCancelled))
 }
