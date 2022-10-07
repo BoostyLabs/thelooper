@@ -6,12 +6,11 @@ package thelooper_test
 import (
 	"context"
 	"errors"
-	"github.com/stretchr/testify/assert"
-	"log"
 	"testing"
 	"time"
 
 	"github.com/BoostyLabs/thelooper"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -48,8 +47,6 @@ func TestLoop_CtxCancel(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	loop := &thelooper.Loop{}
 
-	t.Parallel()
-
 	go func() {
 		cancel()
 	}()
@@ -62,8 +59,6 @@ func TestLoop_CtxCancel(t *testing.T) {
 
 		return nil
 	})
-
-	log.Println(err)
 
 	require.Error(t, err)
 	assert.True(t, errors.Is(err, thelooper.ErrCtxCancelled))
