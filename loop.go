@@ -5,8 +5,12 @@ package thelooper
 
 import (
 	"context"
+	"errors"
 	"time"
 )
+
+// ErrCtxCancelled is error returned by loop when context cancelled.
+var ErrCtxCancelled = errors.New("context cancelled")
 
 // Loop implements a controllable recurring event.
 type Loop struct {
@@ -47,6 +51,8 @@ func (loop *Loop) Run(ctx context.Context, fn func(ctx context.Context) error) e
 	}
 	for {
 		select {
+		case <-ctx.Done():
+			return ErrCtxCancelled
 		case <-loop.stop:
 			return nil
 

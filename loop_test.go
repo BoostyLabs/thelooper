@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/BoostyLabs/thelooper"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -40,4 +41,25 @@ func TestLoop_Run_NoInterval(t *testing.T) {
 		},
 		"Run without setting an interval should panic",
 	)
+}
+
+func TestLoop_CtxCancel(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	loop := &thelooper.Loop{}
+
+	go func() {
+		cancel()
+	}()
+
+	loop.SetInterval(time.Second)
+	err := loop.Run(ctx, func(_ context.Context) error {
+		now := time.Now().UTC()
+		nextDayTime := time.Date(now.Year(), now.Month(), now.Day(), 23, 59, 59, 0, time.UTC)
+		loop.SetNextTickDuration(nextDayTime)
+
+		return nil
+	})
+
+	require.Error(t, err)
+	assert.True(t, errors.Is(err, thelooper.ErrCtxCancelled))
 }
